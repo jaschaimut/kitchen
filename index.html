@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitoring Kebakaran</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-state="wait">
+<div class="glow"></div>
+<div class="flash"></div>
+
+<header>
+  <div class="brand"><span class="logo"></span><div><b>Monitoring Kebakaran</b><small>Deteksi kebakaran ESP32 + model ML</small></div></div>
+  <div class="head-r">
+    <span class="pill" id="conn"><i></i><span>Menghubungkan…</span></span>
+    <button class="btn ghost" id="soundBtn" aria-pressed="false">Suara: mati</button>
+    <time id="clock">--:--:--</time>
+  </div>
+</header>
+
+<main>
+  <section class="hero card">
+    <div class="burner">
+      <svg viewBox="0 0 240 240" aria-hidden="true">
+        <circle class="track" cx="120" cy="120" r="100"/>
+        <circle class="ticks" cx="120" cy="120" r="112"/>
+        <circle class="arc" id="arc" cx="120" cy="120" r="100" transform="rotate(-90 120 120)"/>
+      </svg>
+      <div class="core">
+        <span class="lbl">Tingkat risiko</span>
+        <strong id="risk">0<sup>%</sup></strong>
+        <em id="statusTxt">MENUNGGU</em>
+      </div>
+    </div>
+    <div class="msg">
+      <h1 id="headline">Menunggu data dari perangkat</h1>
+      <p id="sub">Belum ada data masuk. Pastikan ESP32 menyala dan terhubung ke WiFi.</p>
+      <div class="upd">Pembaruan terakhir: <b id="last">-</b></div>
+      <div class="probs">
+        <div class="pr" data-k="0"><span>Aman</span><div><i></i></div><b>0%</b></div>
+        <div class="pr" data-k="1"><span>Waspada</span><div><i></i></div><b>0%</b></div>
+        <div class="pr" data-k="2"><span>Kebakaran</span><div><i></i></div><b>0%</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sensors">
+    <article class="card s" id="cMq2">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 15c2-1 2-3 4-3s2 2 4 2 2-3 4-3 2 2 4 2M4 9c2-1 2-3 4-3s2 2 4 2 2-3 4-3 2 2 4 2M4 21c2-1 2-3 4-3s2 2 4 2 2-3 4-3 2 2 4 2"/></svg></div>
+      <h3>Gas &amp; asap (MQ-2)</h3><strong data-v>0</strong>
+      <div class="bar"><i></i></div><small>Skala ADC 0–4095</small>
+    </article>
+    <article class="card s" id="cFlame">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 6 5 6 11a6 6 0 0 1-12 0c0-3 2-4 3-6 1 1 1 2 2 2 0-2 0-4 1-7z"/></svg></div>
+      <h3>Sensor api (Flame)</h3><strong data-v>0</strong>
+      <div class="bar"><i></i></div><small>Skala 0–100%</small>
+    </article>
+    <article class="card s" id="cTemp">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/></svg></div>
+      <h3>Suhu (BME280)</h3><strong data-v>0</strong>
+      <div class="bar"><i></i></div><small>Skala 0–100 °C</small>
+    </article>
+  </section>
+
+  <section class="card chart">
+    <div class="ct"><h2>Grafik realtime</h2>
+      <div class="legend"><span class="l1">Suhu</span><span class="l2">MQ-2</span><span class="l3">Api</span></div></div>
+    <canvas id="chart" height="240"></canvas>
+  </section>
+
+  <section class="two">
+    <div class="card model">
+      <h2>Skor model (z)</h2>
+      <p class="hint">Kelas dengan skor tertinggi menjadi status. Tiga nilai ini dihitung langsung di ESP32.</p>
+      <div class="zs">
+        <div class="z" id="z0"><span>Aman</span><b>0</b></div>
+        <div class="z" id="z1"><span>Waspada</span><b>0</b></div>
+        <div class="z" id="z2"><span>Kebakaran</span><b>0</b></div>
+      </div>
+    </div>
+    <div class="card log">
+      <h2>Riwayat kejadian</h2>
+      <ul id="log"><li class="empty">Belum ada perubahan status.</li></ul>
+    </div>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
